@@ -15,11 +15,34 @@
             font-family: Arial, sans-serif;
         }
         
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        
         .calculator {
             background-color: #333;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        
+        .history-panel {
+            background-color: #333;
+            border-radius: 10px;
+            padding: 20px;
+            width: 200px;
+            color: white;
+        }
+        
+        .history-item {
+            cursor: pointer;
+            padding: 5px;
+            border-bottom: 1px solid #666;
+        }
+        
+        .history-item:hover {
+            background-color: #444;
         }
         
         #display {
@@ -57,33 +80,49 @@
         button:active {
             background-color: #444;
         }
+        
+        #clear-history {
+            width: 100%;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <input type="text" id="display" readonly>
-        <div class="buttons">
-            <button onclick="appendNumber('7')">7</button>
-            <button onclick="appendNumber('8')">8</button>
-            <button onclick="appendNumber('9')">9</button>
-            <button onclick="appendOperator('+')">+</button>
-            <button onclick="appendNumber('4')">4</button>
-            <button onclick="appendNumber('5')">5</button>
-            <button onclick="appendNumber('6')">6</button>
-            <button onclick="appendOperator('-')">-</button>
-            <button onclick="appendNumber('1')">1</button>
-            <button onclick="appendNumber('2')">2</button>
-            <button onclick="appendNumber('3')">3</button>
-            <button onclick="appendOperator('*')">×</button>
-            <button onclick="appendNumber('0')">0</button>
-            <button onclick="clearDisplay()">C</button>
-            <button onclick="calculate()">=</button>
-            <button onclick="appendOperator('/')">/</button>
+    <div class="container">
+        <div class="calculator">
+            <input type="text" id="display" readonly>
+            <div class="buttons">
+                <button onclick="appendNumber('7')">7</button>
+                <button onclick="appendNumber('8')">8</button>
+                <button onclick="appendNumber('9')">9</button>
+                <button onclick="appendOperator('+')">+</button>
+                <button onclick="appendNumber('4')">4</button>
+                <button onclick="appendNumber('5')">5</button>
+                <button onclick="appendNumber('6')">6</button>
+                <button onclick="appendOperator('-')">-</button>
+                <button onclick="appendNumber('1')">1</button>
+                <button onclick="appendNumber('2')">2</button>
+                <button onclick="appendNumber('3')">3</button>
+                <button onclick="appendOperator('*')">×</button>
+                <button onclick="appendNumber('0')">0</button>
+                <button onclick="clearDisplay()">C</button>
+                <button onclick="calculate()">=</button>
+                <button onclick="appendOperator('/')">/</button>
+            </div>
+        </div>
+        
+        <div class="history-panel">
+            <h3>History</h3>
+            <div id="history-list"></div>
+            <button id="clear-history" onclick="clearHistory()">Clear History</button>
         </div>
     </div>
 
     <script>
         let display = document.getElementById('display');
+        let historyList = document.getElementById('history-list');
+        let calculations = [];
+        let calculationCounter = 0;
         
         function appendNumber(num) {
             display.value += num;
@@ -99,10 +138,45 @@
         
         function calculate() {
             try {
-                display.value = eval(display.value);
+                let expression = display.value;
+                calculationCounter++;
+                
+                // Check if it's the third calculation
+                if (calculationCounter % 3 === 0) {
+                    display.value = 'BOOBS';
+                    calculations.push(`${expression} = BOOBS`);
+                } else {
+                    let result = eval(display.value);
+                    display.value = result;
+                    calculations.push(`${expression} = ${result}`);
+                }
+                
+                updateHistory();
             } catch(error) {
                 display.value = 'Error';
             }
+        }
+        
+        function updateHistory() {
+            historyList.innerHTML = '';
+            calculations.forEach((calc, index) => {
+                let div = document.createElement('div');
+                div.className = 'history-item';
+                div.textContent = calc;
+                div.onclick = () => useHistoryItem(index);
+                historyList.appendChild(div);
+            });
+        }
+        
+        function useHistoryItem(index) {
+            let result = calculations[index].split(' = ')[1];
+            display.value = result;
+        }
+        
+        function clearHistory() {
+            calculations = [];
+            calculationCounter = 0;
+            updateHistory();
         }
     </script>
 </body>
