@@ -3,181 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Calculator</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-        }
-        
-        .container {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .calculator {
-            background-color: #333;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-        }
-        
-        .history-panel {
-            background-color: #333;
-            border-radius: 10px;
-            padding: 20px;
-            width: 200px;
-            color: white;
-        }
-        
-        .history-item {
-            cursor: pointer;
-            padding: 5px;
-            border-bottom: 1px solid #666;
-        }
-        
-        .history-item:hover {
-            background-color: #444;
-        }
-        
-        #display {
-            width: 100%;
-            height: 40px;
-            margin-bottom: 10px;
-            font-size: 24px;
-            text-align: right;
-            padding: 5px;
-            border: none;
-            border-radius: 5px;
-        }
-        
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-        
-        button {
-            padding: 15px;
-            font-size: 18px;
-            border: none;
-            border-radius: 5px;
-            background-color: #666;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        button:hover {
-            background-color: #999;
-        }
-        
-        button:active {
-            background-color: #444;
-        }
-        
-        #clear-history {
-            width: 100%;
-            margin-top: 10px;
-        }
-    </style>
+    <title>Just The Tip - Restaurant Tip Calculator</title>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <div class="calculator">
-            <input type="text" id="display" readonly>
-            <div class="buttons">
-                <button onclick="appendNumber('7')">7</button>
-                <button onclick="appendNumber('8')">8</button>
-                <button onclick="appendNumber('9')">9</button>
-                <button onclick="appendOperator('+')">+</button>
-                <button onclick="appendNumber('4')">4</button>
-                <button onclick="appendNumber('5')">5</button>
-                <button onclick="appendNumber('6')">6</button>
-                <button onclick="appendOperator('-')">-</button>
-                <button onclick="appendNumber('1')">1</button>
-                <button onclick="appendNumber('2')">2</button>
-                <button onclick="appendNumber('3')">3</button>
-                <button onclick="appendOperator('*')">×</button>
-                <button onclick="appendNumber('0')">0</button>
-                <button onclick="clearDisplay()">C</button>
-                <button onclick="calculate()">=</button>
-                <button onclick="appendOperator('/')">/</button>
-            </div>
-        </div>
-        
-        <div class="history-panel">
-            <h3>History</h3>
-            <div id="history-list"></div>
-            <button id="clear-history" onclick="clearHistory()">Clear History</button>
-        </div>
-    </div>
+    <div id="root"></div>
+    <script type="text/babel">
+        const TipCalculator = () => {
+            const [billAmount, setBillAmount] = React.useState('');
+            const [tipPercentage, setTipPercentage] = React.useState('15');
+            const [customTip, setCustomTip] = React.useState('');
+            const [showCustom, setShowCustom] = React.useState(false);
 
-    <script>
-        let display = document.getElementById('display');
-        let historyList = document.getElementById('history-list');
-        let calculations = [];
-        let calculationCounter = 0;
-        
-        function appendNumber(num) {
-            display.value += num;
-        }
-        
-        function appendOperator(op) {
-            display.value += op;
-        }
-        
-        function clearDisplay() {
-            display.value = '';
-        }
-        
-        function calculate() {
-            try {
-                let expression = display.value;
-                calculationCounter++;
-                
-                // Check if it's the third calculation
-                if (calculationCounter % 3 === 0) {
-                    display.value = 'BOOBS';
-                    calculations.push(`${expression} = BOOBS`);
+            const getQuote = (percentage) => {
+                const tipNum = parseFloat(percentage);
+                if (tipNum < 15) {
+                    return '"In my experience, those who do not tip are often the same who complain about poor service." - Unknown';
+                } else if (tipNum < 20) {
+                    return '"A modest tip is a clear indicator of an unfinished character." - Samuel Johnson';
+                } else if (tipNum < 25) {
+                    return '"Generosity is giving more than you can, and pride is taking less than you need." - Kahlil Gibran';
                 } else {
-                    let result = eval(display.value);
-                    display.value = result;
-                    calculations.push(`${expression} = ${result}`);
+                    return '"Your generosity suggests either great wealth or poor math skills." - Oscar Wilde';
                 }
-                
-                updateHistory();
-            } catch(error) {
-                display.value = 'Error';
-            }
-        }
-        
-        function updateHistory() {
-            historyList.innerHTML = '';
-            calculations.forEach((calc, index) => {
-                let div = document.createElement('div');
-                div.className = 'history-item';
-                div.textContent = calc;
-                div.onclick = () => useHistoryItem(index);
-                historyList.appendChild(div);
-            });
-        }
-        
-        function useHistoryItem(index) {
-            let result = calculations[index].split(' = ')[1];
-            display.value = result;
-        }
-        
-        function clearHistory() {
-            calculations = [];
-            calculationCounter = 0;
-            updateHistory();
-        }
+            };
+
+            const activeTip = showCustom ? customTip : tipPercentage;
+            const tipAmount = billAmount ? (parseFloat(billAmount) * parseFloat(activeTip) / 100) : 0;
+            const total = billAmount ? parseFloat(billAmount) + tipAmount : 0;
+
+            return (
+                <div className="min-h-screen w-full max-w-md mx-auto bg-gray-100 p-4">
+                    <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+                        <div className="p-6">
+                            <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">Just The Tip</h1>
+                            
+                            <div className="mb-6">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">
+                                    Bill Amount (including tax)
+                                </label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-2 text-gray-600">$</span>
+                                    <input
+                                        type="number"
+                                        value={billAmount}
+                                        onChange={(e) => setBillAmount(e.target.value)}
+                                        className="w-full p-2 pl-8 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="0.00"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mb-6">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">
+                                    Tip Percentage
+                                </label>
+                                <div className="grid grid-cols-3 gap-2 mb-2">
+                                    <button
+                                        onClick={() => {
+                                            setTipPercentage('15');
+                                            setShowCustom(false);
+                                        }}
+                                        className={`p-2 rounded ${!showCustom && tipPercentage === '15' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                                    >
+                                        15%
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setTipPercentage('25');
+                                            setShowCustom(false);
+                                        }}
+                                        className={`p-2 rounded ${!showCustom && tipPercentage === '25' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                                    >
+                                        25%
+                                    </button>
+                                    <button
+                                        onClick={() => setShowCustom(true)}
+                                        className={`p-2 rounded ${showCustom ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                                    >
+                                        Other
+                                    </button>
+                                </div>
+                                
+                                {showCustom && (
+                                    <div className="relative mt-2">
+                                        <input
+                                            type="number"
+                                            value={customTip}
+                                            onChange={(e) => setCustomTip(e.target.value)}
+                                            className="w-full p-2 pr-8 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Enter percentage"
+                                        />
+                                        <span className="absolute right-3 top-2 text-gray-600">%</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {billAmount && (
+                                <div className="mt-8 bg-gray-50 p-4 rounded-lg">
+                                    <div className="space-y-2 mb-4 font-mono text-sm">
+                                        <div className="text-gray-400 blur-[1px]">THE HUNGRY PENGUIN</div>
+                                        <div className="text-gray-400 blur-[1px]">123 FOOD STREET</div>
+                                        <div className="text-gray-400 blur-[1px]">TASTYTOWN, ST 12345</div>
+                                        <div className="border-b border-gray-300 my-4"></div>
+                                        <div className="text-gray-400 blur-[1px]">DELICIOUS ITEM.....$XX.XX</div>
+                                        <div className="text-gray-400 blur-[1px]">TASTY THING.......$XX.XX</div>
+                                        <div className="border-b border-gray-300 my-4"></div>
+                                        <div className="flex justify-between">
+                                            <span>SUBTOTAL + TAX</span>
+                                            <span>${parseFloat(billAmount).toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span>TIP ({activeTip}%)</span>
+                                            <span>${tipAmount.toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex justify-between font-bold text-lg">
+                                            <span>TOTAL</span>
+                                            <span>${total.toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {billAmount && activeTip && (
+                                <div className="mt-6 p-4 bg-gray-50 rounded-lg italic text-sm text-gray-600">
+                                    {getQuote(activeTip)}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<TipCalculator />, document.getElementById('root'));
     </script>
 </body>
 </html>
